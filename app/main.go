@@ -10,7 +10,7 @@ func main() {
 	fmt.Print("$ ")
 	command, err := bufio.NewReader(os.Stdin).ReadString('\n')
 
-	fmt.Printf("%s: command not found", command)
+	fmt.Println(command[:len(command)-1] + ": not found")
 
 	if err != nil {
 		os.Exit(1)
