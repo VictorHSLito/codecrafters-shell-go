@@ -29,7 +29,7 @@ func HandleCommand(command string) {
 
 	case "exit":
 		{
-			os.Exit(1)
+			os.Exit(0)
 		}
 
 	case "echo":
