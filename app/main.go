@@ -61,15 +61,12 @@ func HandleCommand(command string) {
 				path, err := exec.LookPath(argument)
 
 				if err != nil {
-					fmt.Printf("Error tying to find the path of: %s\n", err)
+					fmt.Printf("%s: not found\n", argument)
 				}
 
 				if len(path) > 0 {
 					fmt.Printf("%s is %s\n", argument, path)
-				} else {
-					fmt.Printf("%s: not found\n", argument)
 				}
-				
 			}
 		}
 
