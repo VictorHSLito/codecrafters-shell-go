@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -57,9 +58,18 @@ func HandleCommand(command string) {
 					fmt.Printf("%s is a shell builtin\n", argument)
 				}
 			default:
-				{
+				path, err := exec.LookPath(argument)
+
+				if err != nil {
+					fmt.Printf("Error tying to find the path of: %s\n", err)
+				}
+
+				if len(path) > 0 {
+					fmt.Printf("%s is %s\n", argument, path)
+				} else {
 					fmt.Printf("%s: not found\n", argument)
 				}
+				
 			}
 		}
 
