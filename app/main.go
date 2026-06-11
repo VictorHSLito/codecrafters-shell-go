@@ -9,70 +9,72 @@ import (
 )
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
+
 	for {
 		fmt.Print("$ ")
-		command, err := bufio.NewReader(os.Stdin).ReadString('\n')
-
-		command = command[:len(command)-1]
-
+		input, err := reader.ReadString('\n')
 		if err != nil {
 			os.Exit(1)
 		}
 
-		HandleCommand(command)
+		input = strings.TrimSpace(input)
+		if input == "" {
+			continue
+		}
+
+		args := strings.Fields(input)
+		command := args[0]
+
+		if isBuiltIn := HandleBuiltIn(command, args, input); isBuiltIn {
+			continue
+		}
+
+		cmd := exec.Command(command, args[1:]...)
+
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			fmt.Printf("%s: command not found\n", command)
+		}
 	}
 }
 
-func HandleCommand(command string) {
-	prefix := strings.Split(command, " ")[0]
-
-	switch prefix {
-
+func HandleBuiltIn(command string, args []string, fullInput string) bool {
+	switch command {
 	case "exit":
-		{
-			os.Exit(0)
-		}
+		os.Exit(0)
+		return true
 
 	case "echo":
-		{
-			fmt.Println(command[5:])
+		if len(fullInput) > 5 {
+			fmt.Println(fullInput[5:])
+		} else {
+			fmt.Println()
 		}
+		return true
 
 	case "type":
-		{
-			argument := strings.Split(command, " ")[1]
-			switch argument {
+		if len(args) < 2 {
+			fmt.Println("type: missing argument")
+			return true
+		}
+		argument := args[1]
 
-			case "echo":
-				{
-					fmt.Printf("%s is a shell builtin\n", argument)
-				}
-
-			case "type":
-				{
-					fmt.Printf("%s is a shell builtin\n", argument)
-				}
-
-			case "exit":
-				{
-					fmt.Printf("%s is a shell builtin\n", argument)
-				}
-			default:
-				path, err := exec.LookPath(argument)
-
-				if err != nil {
-					fmt.Printf("%s: not found\n", argument)
-				}
-
-				if len(path) > 0 {
-					fmt.Printf("%s is %s\n", argument, path)
-				}
+		switch argument {
+		case "echo", "type", "exit":
+			fmt.Printf("%s is a shell builtin\n", argument)
+		default:
+			path, err := exec.LookPath(argument)
+			if err != nil {
+				fmt.Printf("%s: not found\n", argument)
+			} else {
+				fmt.Printf("%s is %s\n", argument, path)
 			}
 		}
-
-	default:
-		{
-			fmt.Printf("%s: not found\n", command)
-		}
+		return true
 	}
+
+	return false
 }
