@@ -74,6 +74,11 @@ func HandleBuiltIn(command string, args []string, fullInput string) bool {
 			}
 		}
 		return true
+
+	case "pwd":
+		dir, _ := os.Getwd()
+		fmt.Println(dir)
+		return true
 	}
 
 	return false
