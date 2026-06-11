@@ -63,7 +63,7 @@ func HandleBuiltIn(command string, args []string, fullInput string) bool {
 		argument := args[1]
 
 		switch argument {
-		case "echo", "type", "exit":
+		case "echo", "type", "exit", "pwd":
 			fmt.Printf("%s is a shell builtin\n", argument)
 		default:
 			path, err := exec.LookPath(argument)
